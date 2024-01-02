@@ -10,6 +10,7 @@ import codes.wasabi.xclaim.protection.ProtectionService;
 import codes.wasabi.xclaim.util.ChunkReference;
 import codes.wasabi.xclaim.util.DisplayItem;
 import codes.wasabi.xclaim.util.InventorySerializer;
+import com.destroystokyo.paper.ParticleBuilder;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
@@ -31,8 +32,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import xyz.xenondevs.particle.ParticleBuilder;
-import xyz.xenondevs.particle.ParticleEffect;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -344,7 +343,6 @@ public class ChunkEditor {
                             .append(Component.text(refer).color(tc))
                     );
                     ply.playSound(ply.getLocation(), Platform.get().getExpSound(), 1f, 1f);
-                    java.awt.Color awtColor = new java.awt.Color(color.asRGB());
                     World w = toChunk.getWorld();
                     double eyeY = to.getY() + ply.getEyeHeight();
                     int targetY = Math.min(Math.max((int) Math.round(eyeY), Platform.get().getWorldMinHeight(w)), w.getMaxHeight() - 1);
@@ -353,18 +351,27 @@ public class ChunkEditor {
                         for (double x = 0; x <= 16; x += 0.5d) {
                             Location aPos = origin.clone().add(x, 0, 0);
                             Location bPos = origin.clone().add(x, 0, 16);
-                            (new ParticleBuilder(ParticleEffect.REDSTONE)).setColor(awtColor).setLocation(aPos).setAmount(1).setOffset(0.02f, 0.02f, 0.02f).display(ply);
-                            (new ParticleBuilder(ParticleEffect.REDSTONE)).setColor(awtColor).setLocation(bPos).setAmount(1).setOffset(0.02f, 0.02f, 0.02f).display(ply);
+                            SpawnRedstoneParticles(color, aPos, bPos);
                         }
                         for (double z = 0; z <= 16; z += 0.5d) {
                             Location aPos = origin.clone().add(0, 0, z);
                             Location bPos = origin.clone().add(16, 0, z);
-                            (new ParticleBuilder(ParticleEffect.REDSTONE)).setColor(awtColor).setLocation(aPos).setAmount(1).setOffset(0.02f, 0.02f, 0.02f).display(ply);
-                            (new ParticleBuilder(ParticleEffect.REDSTONE)).setColor(awtColor).setLocation(bPos).setAmount(1).setOffset(0.02f, 0.02f, 0.02f).display(ply);
+                            SpawnRedstoneParticles(color, aPos, bPos);
                         }
                     }
                 }
             }
+        }
+
+        private void SpawnRedstoneParticles(Color color, Location aPos, Location bPos) {
+            Location[] locations = new Location[]{aPos, bPos};
+            for (int i = 0; i < 2; i++)
+                (new ParticleBuilder(Particle.REDSTONE))
+                        .color(color)
+                        .location(locations[i])
+                        .count(1)
+                        .offset(0.02f, 0.02f, 0.02f)
+                        .spawn();
         }
 
     }

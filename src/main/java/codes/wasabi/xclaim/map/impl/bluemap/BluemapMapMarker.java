@@ -50,7 +50,8 @@ public class BluemapMapMarker implements MapMarker {
 
     @Override
     public void update(@NotNull Claim claim) {
-        XClaim.logger.log(Level.INFO, "Updating claim " + claim.getName() + " on map!");
+        if (XClaim.mainConfig.getBoolean("mapping-integration.debug"))
+            XClaim.logger.log(Level.INFO, "Updating claim " + claim.getName() + " on map!");
 
         ChunkBitmap bmp = new ChunkBitmap(claim.getChunks());
         List<List<Point>> edges = bmp.traceBlocks(true);
