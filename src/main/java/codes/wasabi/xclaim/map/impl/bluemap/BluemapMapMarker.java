@@ -108,7 +108,8 @@ public class BluemapMapMarker implements MapMarker {
         Marker existing = ms.get(token);
         if (existing != null) {
             if (existing instanceof ExtrudeMarker) {
-                return new BluemapMapMarker(ms, (ExtrudeMarker) existing);
+                BluemapMapMarker marker = new BluemapMapMarker(ms, (ExtrudeMarker) existing);
+                return marker;
             } else {
                 ms.remove(token);
             }

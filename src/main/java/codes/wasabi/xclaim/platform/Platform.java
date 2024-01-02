@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Objects;
 
+/// Class which helps base interactions between the plugin and the server itself.
 public abstract class Platform {
 
     private static boolean initialized = false;
@@ -31,11 +32,16 @@ public abstract class Platform {
     public static void init() {
         if (initialized) return;
         boolean isPaper = PaperLib.isPaper();
+
+        // If we're not paper and the paper warning hasn't been disabled, suggest that they use paper.
         if (!isPaper) {
             if (!XClaim.mainConfig.getBoolean("disable-paper-warning", false)) {
                 PaperLib.suggestPaper(XClaim.instance);
             }
         }
+
+        // Select the proper instance version based off of the server's version.
+            // V2: I wish we could use a switch statement here, but Paperlib doesn't give a specific version number output.
         if (PaperLib.isVersion(17)) {
             if (isFolia()) {
                 instance = new codes.wasabi.xclaim.platform.folia_1_19.FoliaPlatform();

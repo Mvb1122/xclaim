@@ -14,6 +14,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+// Class which facilitates interactions between our plugin and either Dynmap and/or BlueMap. (Both work at once.)
 public abstract class MapService {
 
     private static MapService instance = null;
@@ -24,16 +25,21 @@ public abstract class MapService {
         if (instanceInit) {
             return instance;
         }
-        if (!XClaim.mainConfig.getBoolean("dynmap-integration.enabled", true)) {
+
+        // V2: Change dynmap to mapping.
+        if (!XClaim.mainConfig.getBoolean("mapping-integration.enabled", true)) {
             instanceValid = false;
             instanceInit = true;
             return null;
         }
+
         ServiceFactory<MapService> factory = new ServiceFactory<>(
                 BluemapMapService.class,
                 DynmapMapService.class
         );
-        instance = factory.createElseNull(XClaim.mainConfig.getBoolean("dynmap-integration.debug", false));
+
+        // V2: Change dynmap to mapping.
+        instance = factory.createElseNull(XClaim.mainConfig.getBoolean("mapping-integration.debug", false));
         instanceValid = instance != null;
         instanceInit = true;
         return instance;

@@ -29,6 +29,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+// Class which represents a players' claim, consisting of a number of chunks.
 public class Claim {
 
     private static final Set<Claim> registry = new HashSet<>();
@@ -173,6 +174,7 @@ public class Claim {
             }
             players.put(uuid, set);
         }
+
         Claim ret = new Claim(name, chunks, XCPlayer.of(owner), global, players, -1);
         if (section.contains("graceStart")) {
             ret.graceStart = section.getLong("graceStart", -1);
@@ -180,21 +182,35 @@ public class Claim {
         return ret;
     }
 
+    /// The name of this claim.
     private String name;
+
+    /// All of the chunks in this claim.
     private final Set<ChunkReference> chunks;
+
+    /// The player representing the owner of this claim.
     private XCPlayer owner;
+
+    // Global- and player-based permissions for accessing this claim.
     private final Map<Permission, TrustLevel> globalPerms;
     private final Map<UUID, EnumSet<Permission>> playerPerms;
+
+    // Functions to call whenever the owner changes hands.
     private final List<java.util.function.Consumer<Claim>> ownerChangeCallbacks = Collections.synchronizedList(new ArrayList<>());
+
+    // The outer bounds as found via generateBounds(); useful for mapping.
     private BoundingBox outerBounds;
+
     private boolean manageHandlers = false;
     private long graceStart = -1;
 
     private void validateMarkers() {
+        // Validate markers if there's a map service available.
         if (MapService.isAvailable()) {
             MapService ms = MapService.getNonNull();
             ms.getMarkerAsync(this, (MapMarker marker) -> {
-                if (marker != null) marker.update(this);
+                if (marker != null)
+                    marker.update(this);
             });
         }
     }
@@ -331,12 +347,14 @@ public class Claim {
 
     public boolean addChunk(@NotNull Chunk chunk) throws IllegalArgumentException {
         boolean claim = false;
+
         if (chunks.size() > 0) {
             World w = chunks.iterator().next().world;
             if (w != chunk.getWorld()) throw new IllegalArgumentException("New chunks must be in the same world as previous chunks!");
         } else {
             claim = true;
         }
+
         boolean ret = true;
         for (ChunkReference other : chunks) {
             if (other.matches(chunk)) {
@@ -347,6 +365,7 @@ public class Claim {
         ChunkReference ref = ChunkReference.ofChunk(chunk);
         if (ret) ret = chunks.add(ref);
         if (ret) {
+            // Ensure bounds are set -> Update marker
             generateBounds();
             if (manageHandlers) {
                 for (Claim c : registry) {
@@ -575,7 +594,10 @@ public class Claim {
         }
         if (added) {
             updateHandlers();
+
+            // Add the marker to the map when the claim is added.
             validateMarkers();
+
             return true;
         }
         return false;
@@ -599,6 +621,8 @@ public class Claim {
         if (removed) {
             removeHandlers();
             ownerChangeCallbacks.clear();
+
+            // Remove the marker from the map when the claim is removed.
             if (MapService.isAvailable()) {
                 MapService ms = MapService.getNonNull();
                 ms.getMarkerAsync(this, (MapMarker marker) -> {

@@ -25,7 +25,7 @@ limits:
     max-chunks: 25
     max-claims: 8
     give-after: 604800 # measured in seconds
-dynmap-integration:
+mapping-integration:
   enabled: true
   use-old-outline-style: false
   debug: false

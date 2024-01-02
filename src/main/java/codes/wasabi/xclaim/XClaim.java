@@ -55,18 +55,31 @@ public final class XClaim extends JavaPlugin {
         logger = getLogger();
         loadGeneralConfig();
         setupLang();
+
+        // If economy is available, check if it's actually enabled.
         if (!Economy.isAvailable()) {
             if (mainConfig.getBoolean("use-economy", false)) {
                 logger.log(Level.WARNING, lang.get("eco-fail"));
             }
         }
+
+        // Get our platform selected based off of the server version.
         Platform.init();
+
+        // Ensure we have a data folder.
         dataFolder = getDataFolder();
         if (dataFolder.mkdirs()) logger.log(Level.INFO, lang.get("data-folder-created"));
+
         locateJarFile();
-        loadDynmap();
+
+        // Check to see if we can use dynmap or any other mapping service.
+        loadMapping();
+
+        // Finally, load claims and players.
         loadTrustedPlayers();
         loadClaims();
+
+        // Then, start our actual codes.
         startServices();
         logger.log(Level.INFO, lang.get("startup-done"));
     }
@@ -178,9 +191,10 @@ public final class XClaim extends JavaPlugin {
         }
     }
 
-    private void loadDynmap() {
-        if (mainConfig.getBoolean("dynmap-integration.enabled", true)) {
-            logger.log(Level.INFO, lang.get("dynmap-check"));
+    private void loadMapping() {
+        // V2: Change dynmap-integration.enabled to mapping-integration.enabled
+        if (mainConfig.getBoolean("mapping-integration.enabled", true)) {
+            logger.log(Level.INFO, lang.get("mapping-check"));
             MapService.get();
         }
     }
