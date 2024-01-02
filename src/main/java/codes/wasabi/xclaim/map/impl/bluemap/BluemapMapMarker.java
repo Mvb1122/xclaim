@@ -80,15 +80,14 @@ public class BluemapMapMarker implements MapMarker {
     }
 
     // Package Private
-    private static final String markerSetId = "xclaim_marker_set";
-    private static final Map<UUID, MarkerSet> markerSetMap = new HashMap<>();
+    private static final Map<String, MarkerSet> markerSetMap = new HashMap<>();
     private static @Nullable MarkerSet getMarkerSet(BlueMapAPI api, Claim claim) {
         World world = claim.getWorld();
         if (world == null) return null;
 
         // Check if we've already created a marker set and return that if needed.
-        UUID uuid = world.getUID();
-        if (markerSetMap.containsKey(uuid)) return markerSetMap.get(uuid);
+        String MapLocation = claim.getOwner().getName() + "'s claims"; // Index them by the set name, which includes the player name.
+        if (markerSetMap.containsKey(MapLocation)) return markerSetMap.get(MapLocation);
 
         Optional<BlueMapWorld> opt = api.getWorld(world);
         if (!opt.isPresent()) return null;
@@ -96,23 +95,17 @@ public class BluemapMapMarker implements MapMarker {
 
         MarkerSet ms = MarkerSet.builder()
                 // V2: Bump dynmap-marker-name to mapping-marker-name
-                .label(XClaim.lang.get("mapping-marker-name"))
+                .label(MapLocation)
                 .build();
 
         // Save the set for later disposal.
-        markerSetMap.put(uuid, ms);
+        markerSetMap.put(MapLocation, ms);
 
         for (BlueMapMap map : bmw.getMaps()) {
-            // Randomly rename the marker set each time we update it.
-            // For some reason, this fixes the issue of only showing one marker, but they all get put into the same category at the end.
-            int index = (int) Math.floor(Math.random() * 10000);
-            ms.setLabel(XClaim.lang.get("mapping-marker-name") + index);
-
             // Put our marker on the map.
-            map.getMarkerSets().put(markerSetId, ms);
+            map.getMarkerSets().put(MapLocation, ms);
         }
 
-        ms.setLabel(XClaim.lang.get("mapping-marker-name"));
         return ms;
     }
 
@@ -173,10 +166,13 @@ public class BluemapMapMarker implements MapMarker {
     }
 
     static void cleanup(Object apiInstance) {
+        return;
+        /* You don't actually have to remove them, BlueMap won't persist them anyway.
         BlueMapAPI api = (BlueMapAPI) apiInstance;
         for (BlueMapMap map : api.getMaps()) {
             map.getMarkerSets().remove(markerSetId);
         }
+        */
     }
 
 }

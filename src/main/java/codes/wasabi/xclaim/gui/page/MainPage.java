@@ -86,6 +86,7 @@ public class MainPage extends Page {
             case NEW_POS:
                 switchPage(new NewClaimPage(getParent()));
                 break;
+
             case EDIT_TRUST_POS:
                 switchPage(new PlayerCombinatorPage(getParent()) {
                     private final XCPlayer me = XCPlayer.of(getTarget());
@@ -111,6 +112,7 @@ public class MainPage extends Page {
                     }
                 });
                 break;
+
             case EDIT_CHUNK_POS:
                 switchPage(new ClaimSelectorPage(getParent(), claim -> {
                     Player ply = getTarget();
@@ -132,6 +134,7 @@ public class MainPage extends Page {
                     getParent().close();
                 }));
                 break;
+
             case RENAME_CHUNK_POS:
                 switchPage(new ClaimSelectorPage(getParent(), claim -> {
                     switchPage(MainPage.this);
@@ -145,15 +148,19 @@ public class MainPage extends Page {
                     });
                 }));
                 break;
+
             case EDIT_PERM_POS:
                 switchPage(new ClaimSelectorPage(getParent(), claim -> switchPage(new PermissionPage(getParent(), claim))));
                 break;
+
             case TRANSFER_OWNER_POS:
                 switchPage(new ClaimSelectorPage(getParent(), claim -> switchPage(new TransferPage(getParent(), claim))));
                 break;
+
             case CLEAR_ALL_POS:
                 switchPage(new ClearAllPage(getParent()));
                 break;
+
             case DELETE_POS:
                 switchPage(new ClaimSelectorPage(getParent(), Claim::unclaim) {
                     @Override
@@ -162,9 +169,11 @@ public class MainPage extends Page {
                     }
                 });
                 break;
+
             case VERSION_POS:
                 switchPage(new VersionInfoPage(getParent()));
                 break;
+
             case EXIT_POS:
                 getParent().close();
                 break;
