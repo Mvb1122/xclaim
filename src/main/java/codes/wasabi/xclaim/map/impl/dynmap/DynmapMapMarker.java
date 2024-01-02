@@ -43,7 +43,7 @@ public class DynmapMapMarker implements MapMarker {
         World w = claim.getWorld();
         if (w != null) minHeight = Platform.get().getWorldMinHeight(w);
         List<Point> points;
-        if (XClaim.mainConfig.getBoolean("dynmap-integration.use-old-outline-style", false)) {
+        if (XClaim.mainConfig.getBoolean("mapping-integration.use-old-outline-style", false)) {
             points = new ArrayList<>();
             for (ChunkReference c : claim.getChunks()) {
                 Location cornerBlock = c.getLocation(0, minHeight, 0);
@@ -78,7 +78,7 @@ public class DynmapMapMarker implements MapMarker {
         MarkerAPI api = dynmap.getMarkerAPI();
         MarkerSet ms = api.getMarkerSet("xclaim_marker_set");
         if (ms == null) {
-            ms = api.createMarkerSet("xclaim_marker_set", XClaim.lang.get("dynmap-marker-name"), null, false);
+            ms = api.createMarkerSet("xclaim_marker_set", XClaim.lang.get("mapping-marker-name"), null, false);
         }
         return ms;
     }

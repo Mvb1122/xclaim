@@ -7,7 +7,7 @@
   "mapping-check": "Checking for a mapping service!",
   "dynmap-warn-core": "Failed to validate Dynmap core, proceeding anyways...",
   "dynmap-hooked": "Hooked into Dynmap version $1",
-  "dynmap-marker-name": "Claims",
+  "mapping-marker-name": "Claims",
   "eco-fail": "No suitable economy plugin was found",
   "trust-load": "Loading trusted players",
   "trust-load-err": "An error occurred while loading trusted players. See details below.",

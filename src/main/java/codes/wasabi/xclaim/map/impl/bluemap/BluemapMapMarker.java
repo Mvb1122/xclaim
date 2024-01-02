@@ -24,6 +24,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.logging.Level;
 
 public class BluemapMapMarker implements MapMarker {
 
@@ -49,6 +50,8 @@ public class BluemapMapMarker implements MapMarker {
 
     @Override
     public void update(@NotNull Claim claim) {
+        XClaim.logger.log(Level.INFO, "Updating claim " + claim.getName() + " on map!");
+
         ChunkBitmap bmp = new ChunkBitmap(claim.getChunks());
         List<List<Point>> edges = bmp.traceBlocks(true);
 
@@ -81,6 +84,8 @@ public class BluemapMapMarker implements MapMarker {
     private static @Nullable MarkerSet getMarkerSet(BlueMapAPI api, Claim claim) {
         World world = claim.getWorld();
         if (world == null) return null;
+
+        // Check if we've already created a marker set and return that if needed.
         UUID uuid = world.getUID();
         if (markerSetMap.containsKey(uuid)) return markerSetMap.get(uuid);
 
@@ -89,13 +94,24 @@ public class BluemapMapMarker implements MapMarker {
         BlueMapWorld bmw = opt.get();
 
         MarkerSet ms = MarkerSet.builder()
-                .label(XClaim.lang.get("dynmap-marker-name"))
+                // V2: Bump dynmap-marker-name to mapping-marker-name
+                .label(XClaim.lang.get("mapping-marker-name"))
                 .build();
+
+        // Save the set for later disposal.
         markerSetMap.put(uuid, ms);
 
         for (BlueMapMap map : bmw.getMaps()) {
+            // Randomly rename the marker set each time we update it.
+            // For some reason, this fixes the issue of only showing one marker, but they all get put into the same category at the end.
+            int index = (int) Math.floor(Math.random() * 10000);
+            ms.setLabel(XClaim.lang.get("mapping-marker-name") + index);
+
+            // Put our marker on the map.
             map.getMarkerSets().put(markerSetId, ms);
         }
+
+        ms.setLabel(XClaim.lang.get("mapping-marker-name"));
         return ms;
     }
 
